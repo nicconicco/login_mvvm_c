@@ -17,3 +17,11 @@ interface Service {
         @Body request: User
     ): Single<GetUserResponse>
 }
+
+interface ServiceMock {
+
+    @POST("create_auth.json")
+    fun getUser(
+        @Body request: User
+    ): Single<GetUserResponse>
+}

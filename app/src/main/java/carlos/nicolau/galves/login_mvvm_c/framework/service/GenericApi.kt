@@ -46,6 +46,32 @@ object GenericApi {
         return null
     }
 
+    fun <T> createApiMock(endpointApi: Class<T>): T {
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+
+        val httpClient = OkHttpClient.Builder()
+
+        httpClient.addInterceptor(logging)
+
+        isMockFlavorSelected()?.let {
+            httpClient.addInterceptor(it)
+        }
+
+        val gson = GsonBuilder().setLenient().create()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BuildConfig.URL_API)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(httpClient.build())
+            .build()
+
+        return retrofit.create(endpointApi)
+    }
+
+
+
     fun getServiceRX(): Service {
         val client: OkHttpClient.Builder =
             when {
